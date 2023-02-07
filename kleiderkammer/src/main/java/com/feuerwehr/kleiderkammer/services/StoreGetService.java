@@ -1,6 +1,7 @@
 package com.feuerwehr.kleiderkammer.services;
 
 import com.feuerwehr.kleiderkammer.domain.models.Adult;
+import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultRepository;
@@ -29,7 +30,9 @@ public class StoreGetService {
     }
 
 
-
+    public List<Stuff> getStuffs() {
+        return stuffRepository.findAll();
+    }
 
 
 }

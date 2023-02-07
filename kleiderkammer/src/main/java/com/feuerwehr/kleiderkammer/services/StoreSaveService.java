@@ -73,82 +73,116 @@ public class StoreSaveService {
         return adultClothesRepository.save(skeleton);
     }
 
-    void addStuffToAdult(Stuff stuff, Adult adult) {
+    String addStuffToAdult(Stuff stuff, Adult adult) {
         if (adult == null) {
             log.warn("Can not add stuff to user : user is null");
-            return;
+            return "Can not add stuff to user : user is null";
         }
         if (adult.getAdultClothes() == null) {
             log.warn("Can not add stuff to user : user clothes is null");
-            return;
+            return "Can not add stuff to user : user clothes is null";
         }
 
-        addStuffToClothes(stuff, adult.getAdultClothes());
+        String res = addStuffToClothes(stuff, adult.getAdultClothes());
         adultClothesRepository.save(adult.getAdultClothes());
+        return res;
     }
 
-    void addStuffToAdult(Integer stuffId, Integer adultId) {
+    public String addStuffToAdult(Integer stuffId, Integer adultId) {
         var stuff = stuffRepository.findById(stuffId);
         var adult = adultRepository.findById(adultId);
         if (stuff.isPresent() && adult.isPresent())
-            addStuffToAdult(stuff.get(), adult.get());
+            return addStuffToAdult(stuff.get(), adult.get());
+        return "Something went wrong";
     }
 
-    void addStuffToClothes(Stuff stuff, AdultClothes clothes) {
+    String addStuffToClothes(Stuff stuff, AdultClothes clothes) {
         if (stuff == null)
-            return;
-        var _stuff = saveStuffToClothes(stuff, clothes);
+            return null;
 
         switch (stuff.getStuffType()) {
             case Helm -> {
+
                 if (clothes.getHelmet() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setHelmet(_stuff);
             }
             case Einsatzjacke -> {
+
                 if (clothes.getCombatJacket() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setCombatJacket(_stuff);
             }
             case Einsatzhose -> {
+
                 if (clothes.getCombatTrousers() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setCombatTrousers(_stuff);
             }
             case Überhose -> {
+
                 if (clothes.getTopTrousers() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setTopTrousers(_stuff);
             }
             case Feuerwehrstiefel -> {
+
                 if (clothes.getFirefightingBoots() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setFirefightingBoots(_stuff);
             }
             case Gurt -> {
+
                 if (clothes.getBelt() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setBelt(_stuff);
             }
             case HandschuheBrandbekämpfung -> {
+
                 if (clothes.getFirefightingGloves() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setFirefightingGloves(_stuff);
             }
             case Handschuhe -> {
+
                 if (clothes.getGloves() != null) {
-                    log.warn("Can not add: This adult already have " + _stuff.getStuffType().name());
+                    log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
+                    return "Can not add: This adult already have " + stuff.getStuffType().name();
                 }
+                var _stuff = saveStuffToClothes(stuff, clothes);
+
                 clothes.setGloves(_stuff);
             }
         }
+        return null;
     }
 
     Stuff saveStuffToClothes(Stuff stuff, AdultClothes clothes) {
@@ -162,16 +196,37 @@ public class StoreSaveService {
         } else {
             var _stuff = stuffOptional.get();
             if (_stuff.getAdultClothesId() != null) {
-                log.error("This " + stuff.getStuffType().name() + "already used");
+                log.error("This " + stuff.getStuffType().name() + " already used");
                 return null;
             }
-            return _stuff;
+            _stuff.setAdultClothesId(clothes.getId());
+            return stuffRepository.save(_stuff);
+
         }
     }
 
-    Stuff saveStuff(Stuff stuff) {
+    public Stuff saveStuff(Stuff stuff) {
+        if (stuff == null)
+            return null;
+
         if (stuff.getParameters() != null)
             stuff.getParameters().forEach(this::saveParameter);
+        if (stuffRepository.findByBatchCode(stuff.getBatchCode()).isPresent()) {
+            log.warn("Can not save stuff: already exist");
+            return null;
+        }
+
+        return stuffRepository.save(stuff);
+    }
+
+    public Stuff updateStuff(Stuff stuff) {
+        if (stuff == null)
+            return null;
+        if (stuff.getParameters() != null)
+            stuff.getParameters().forEach(parameter -> {
+                if (parameter.getId() == null)
+                    saveParameter(parameter);
+            });
         return stuffRepository.save(stuff);
     }
 

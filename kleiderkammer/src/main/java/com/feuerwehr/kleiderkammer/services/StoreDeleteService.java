@@ -73,7 +73,7 @@ public class StoreDeleteService {
 
 
     public void unpair(Integer batchCode) {
-        var stuff = stuffRepository.findByBatchCode(batchCode);
+        var stuff = stuffRepository.findById(batchCode);
         if (stuff.isEmpty())
             return;
 
