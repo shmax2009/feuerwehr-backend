@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -43,6 +45,32 @@ public class ErrorHandler {
             return ResponseEntity.ok().build();
         else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
+
+    public ResponseEntity<String> handleFetchStuff(Stuff stuff) {
+
+        if (stuffRepository.findByBatchCode(stuff.getBatchCode()).isPresent() && !Objects.equals(stuffRepository.findByBatchCode(stuff.getBatchCode()).get().getId(), stuff.getId()))
+            return ResponseEntity.badRequest().body("Can not fetch stuff, this stuff batchCode is already used with " +
+                "another stuff");
+
+
+        var _stuff = stuffRepository.findById(stuff.getId());
+        if (_stuff.isEmpty())
+            return ResponseEntity.badRequest().body("Can not fetch stuff, this stuff don't exist");
+
+        var __stuff = _stuff.get();
+        if (__stuff.getStuffType() != stuff.getStuffType())
+            return ResponseEntity.badRequest().body("Can not fetch stuff, stuff can not change his type");
+
+        String result = StuffValidator.validateStuff(stuff);
+
+        if (result == null)
+            return ResponseEntity.ok().build();
+        else {
+            var _result = result.replace("save", "fetch");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(_result);
+        }
+    }
+
 
     public ResponseEntity<String> handleAddStuffToUser(Integer adultId, Integer stuffId) {
         var adultOptional = adultRepository.findById(adultId);

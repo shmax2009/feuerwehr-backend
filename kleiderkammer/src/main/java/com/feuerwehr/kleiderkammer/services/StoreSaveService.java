@@ -3,12 +3,10 @@ package com.feuerwehr.kleiderkammer.services;
 import com.feuerwehr.kleiderkammer.domain.models.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.AdultClothes;
 import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
-import com.feuerwehr.kleiderkammer.domain.models.clothes.Parameter;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultRepository;
-import com.feuerwehr.kleiderkammer.domain.repository.clothes.ParameterRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.clothes.StuffRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Transactional
 @Slf4j
 public class StoreSaveService {
-    private final ParameterRepository parameterRepository;
     private final AdultClothesRepository adultClothesRepository;
     private final AdultRepository adultRepository;
     private final AdultInfoRepository adultInfoRepository;
@@ -73,39 +70,39 @@ public class StoreSaveService {
         return adultClothesRepository.save(skeleton);
     }
 
-    String addStuffToAdult(Stuff stuff, Adult adult) {
+    void addStuffToAdult(Stuff stuff, Adult adult) {
         if (adult == null) {
             log.warn("Can not add stuff to user : user is null");
-            return "Can not add stuff to user : user is null";
+            throw new RuntimeException("Can not add stuff to user : user is null");
         }
         if (adult.getAdultClothes() == null) {
             log.warn("Can not add stuff to user : user clothes is null");
-            return "Can not add stuff to user : user clothes is null";
+            throw new RuntimeException("Can not add stuff to user : user clothes is null");
         }
 
-        String res = addStuffToClothes(stuff, adult.getAdultClothes());
+        addStuffToClothes(stuff, adult.getAdultClothes());
         adultClothesRepository.save(adult.getAdultClothes());
-        return res;
     }
 
-    public String addStuffToAdult(Integer stuffId, Integer adultId) {
+    public void addStuffToAdult(Integer stuffId, Integer adultId) {
         var stuff = stuffRepository.findById(stuffId);
         var adult = adultRepository.findById(adultId);
-        if (stuff.isPresent() && adult.isPresent())
-            return addStuffToAdult(stuff.get(), adult.get());
-        return "Something went wrong";
+        if (stuff.isPresent() && adult.isPresent()) {
+            addStuffToAdult(stuff.get(), adult.get());
+            return;
+        }
+        throw new RuntimeException("Something went wrong");
     }
 
-    String addStuffToClothes(Stuff stuff, AdultClothes clothes) {
+    void addStuffToClothes(Stuff stuff, AdultClothes clothes) {
         if (stuff == null)
-            return null;
-
+            return;
         switch (stuff.getStuffType()) {
             case Helm -> {
 
                 if (clothes.getHelmet() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -115,7 +112,7 @@ public class StoreSaveService {
 
                 if (clothes.getCombatJacket() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -125,7 +122,7 @@ public class StoreSaveService {
 
                 if (clothes.getCombatTrousers() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -135,7 +132,7 @@ public class StoreSaveService {
 
                 if (clothes.getTopTrousers() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -145,7 +142,7 @@ public class StoreSaveService {
 
                 if (clothes.getFirefightingBoots() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -155,7 +152,7 @@ public class StoreSaveService {
 
                 if (clothes.getBelt() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -165,7 +162,7 @@ public class StoreSaveService {
 
                 if (clothes.getFirefightingGloves() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
@@ -175,14 +172,14 @@ public class StoreSaveService {
 
                 if (clothes.getGloves() != null) {
                     log.warn("Can not add: This adult already have " + stuff.getStuffType().name());
-                    return "Can not add: This adult already have " + stuff.getStuffType().name();
+                    throw new RuntimeException("Can not add: This adult already have " + stuff.getStuffType().name());
                 }
                 var _stuff = saveStuffToClothes(stuff, clothes);
 
                 clothes.setGloves(_stuff);
             }
         }
-        return null;
+
     }
 
     Stuff saveStuffToClothes(Stuff stuff, AdultClothes clothes) {
@@ -197,7 +194,7 @@ public class StoreSaveService {
             var _stuff = stuffOptional.get();
             if (_stuff.getAdultClothesId() != null) {
                 log.error("This " + stuff.getStuffType().name() + " already used");
-                return null;
+                throw new RuntimeException("This " + stuff.getStuffType().name() + " already used");
             }
             _stuff.setAdultClothesId(clothes.getId());
             return stuffRepository.save(_stuff);
@@ -208,29 +205,25 @@ public class StoreSaveService {
     public Stuff saveStuff(Stuff stuff) {
         if (stuff == null)
             return null;
-
-        if (stuff.getParameters() != null)
-            stuff.getParameters().forEach(this::saveParameter);
         if (stuffRepository.findByBatchCode(stuff.getBatchCode()).isPresent()) {
             log.warn("Can not save stuff: already exist");
             return null;
         }
 
         return stuffRepository.save(stuff);
+//        Stuff stuffSkeleton = new Stuff(null, stuff.getModel(), stuff.getSize(), stuff.getBatchCode(), stuff.getDate(),
+//            stuff.getAdditionalInfo(), stuff.getStuffType(), null, stuff.getAdultClothesId());
+//
+//        stuffRepository.save(stuffSkeleton);
+//
+//        var parameters = stuff.getParameters();
+//        if (parameters != null)
+//            for (int i = 0; i < parameters.size(); i++) {
+//                parameters.set(i, saveParameter(parameters.get(i), stuffSkeleton.getId()));
+//            }
+//        stuffSkeleton.setParameters(parameters);
+//        return stuffRepository.save(stuffSkeleton);
     }
 
-    public Stuff updateStuff(Stuff stuff) {
-        if (stuff == null)
-            return null;
-        if (stuff.getParameters() != null)
-            stuff.getParameters().forEach(parameter -> {
-                if (parameter.getId() == null)
-                    saveParameter(parameter);
-            });
-        return stuffRepository.save(stuff);
-    }
 
-    public Parameter saveParameter(Parameter parameter) {
-        return parameterRepository.save(parameter);
-    }
 }

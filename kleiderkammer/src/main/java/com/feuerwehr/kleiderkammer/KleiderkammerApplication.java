@@ -1,11 +1,11 @@
 package com.feuerwehr.kleiderkammer;
 
+import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.domain.models.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.AdultClothes;
 import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Parameter;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
-import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.services.StoreGetService;
 import com.feuerwehr.kleiderkammer.services.StoreSaveService;
 import org.springframework.boot.CommandLineRunner;
@@ -27,6 +27,7 @@ public class KleiderkammerApplication {
     CommandLineRunner runner(StoreSaveService storeSaveService, StoreGetService storeGetService) {
         return args -> {
 
+
             storeSaveService.saveAdult(Adult.builder()
                 .adultInfo(
                     AdultInfo.builder()
@@ -43,7 +44,7 @@ public class KleiderkammerApplication {
                             .size(3000)
                             .additionalInfo("The best")
                             .type(StuffType.Helm)
-                            .parameter(new Parameter(null, Boolean.class.getSimpleName(), "X", "false"))
+                            .parameter(new Parameter(Boolean.class.getSimpleName(), "X", "false"))
                             .build())
                         .combatJacket(Stuff.builder()
                             .model("The best 2")

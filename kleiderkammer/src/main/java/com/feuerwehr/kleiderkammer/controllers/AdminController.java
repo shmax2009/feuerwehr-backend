@@ -1,8 +1,9 @@
 package com.feuerwehr.kleiderkammer.controllers;
 
 
-import com.feuerwehr.kleiderkammer.domain.models.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
+import com.feuerwehr.kleiderkammer.domain.models.dto.AdultDTO;
+import com.feuerwehr.kleiderkammer.domain.models.dto.StuffDTO;
 import com.feuerwehr.kleiderkammer.services.StoreDeleteService;
 import com.feuerwehr.kleiderkammer.services.StoreGetService;
 import com.feuerwehr.kleiderkammer.services.StoreSaveService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
@@ -27,13 +29,15 @@ public class AdminController {
 
     //
     @GetMapping("/get/adults")
-    public List<Adult> getAdults() {
-        return storeGetService.getAdults();
+    public List<AdultDTO> getAdults() {
+        return storeGetService.getAdults().stream().map(AdultDTO::new).collect(Collectors.toList());
     }
 
     @GetMapping("/get/stuffs")
-    public List<Stuff> getStuffs() {
-        return storeGetService.getStuffs();
+    public List<StuffDTO> getStuffs() throws Exception {
+
+//        throw new Exception("Bla bla bla");
+        return storeGetService.getStuffs().stream().map(StuffDTO::new).collect(Collectors.toList());
     }
 
     @PatchMapping("/patch/unpair-stuff/{id}")
@@ -46,11 +50,11 @@ public class AdminController {
     }
 
     @PutMapping("/put/stuff")
-    public ResponseEntity<String> saveStuff(@RequestBody Stuff stuff) {
-        var result = errorHandler.handleSaveStuff(stuff);
+    public ResponseEntity<String> saveStuff(@RequestBody StuffDTO stuffDTO) {
+        var result = errorHandler.handleSaveStuff(stuffDTO.toStuff());
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.saveStuff(stuff);
+        storeSaveService.saveStuff(stuffDTO.toStuff());
         return result;
     }
 
@@ -59,25 +63,18 @@ public class AdminController {
         var result = errorHandler.handleAddStuffToUser(adultId, stuffId);
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        String s = storeSaveService.addStuffToAdult(stuffId, adultId);
-        if (s == null)
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(s);
+        storeSaveService.addStuffToAdult(stuffId, adultId);
+        return ResponseEntity.ok().build();
     }
-//
-//
-//    @PostMapping("/add/helmet")
-//    public ResponseEntity saveHelmet(@RequestBody Helmet helmet) {
-//        storeSaveService.saveStuff(helmet);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/add/jacket")
-//    public ResponseEntity saveJacket(@RequestBody Jacket jacket) {
-//        storeSaveService.saveStuff(jacket);
-//        return ResponseEntity.ok().build();
-//    }
+
+    @PatchMapping("/patch/stuff")
+    public ResponseEntity<String> patchStuff(@RequestBody Stuff stuff) {
+        var result = errorHandler.handleFetchStuff(stuff);
+        if (result.getStatusCode() != HttpStatus.OK)
+            return result;
+//        storeSaveService.updateStuff(stuff);
+        return result;
+    }
 //
 //
 //    @GetMapping("/check")

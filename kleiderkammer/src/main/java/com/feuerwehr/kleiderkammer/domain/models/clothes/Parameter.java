@@ -1,22 +1,16 @@
 package com.feuerwehr.kleiderkammer.domain.models.clothes;
 
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "parameters")
-@Entity
 public class Parameter {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
     private String type;
     private String name;
     private String value;
@@ -26,6 +20,11 @@ public class Parameter {
             return null;
         }
         return Parser.parse(tClass, value);
+    }
+
+    public static Parameter fromMap(HashMap<String, String> map) {
+        return new Parameter(map.get("type"), map.get("name"),
+            map.get("value"));
     }
 
 }
