@@ -72,7 +72,7 @@ public class AdminController {
         var result = errorHandler.handleFetchStuff(stuff);
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-//        storeSaveService.updateStuff(stuff);
+        storeSaveService.fetchStuff(stuff);
         return result;
     }
 //

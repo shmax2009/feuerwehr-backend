@@ -211,18 +211,16 @@ public class StoreSaveService {
         }
 
         return stuffRepository.save(stuff);
-//        Stuff stuffSkeleton = new Stuff(null, stuff.getModel(), stuff.getSize(), stuff.getBatchCode(), stuff.getDate(),
-//            stuff.getAdditionalInfo(), stuff.getStuffType(), null, stuff.getAdultClothesId());
-//
-//        stuffRepository.save(stuffSkeleton);
-//
-//        var parameters = stuff.getParameters();
-//        if (parameters != null)
-//            for (int i = 0; i < parameters.size(); i++) {
-//                parameters.set(i, saveParameter(parameters.get(i), stuffSkeleton.getId()));
-//            }
-//        stuffSkeleton.setParameters(parameters);
-//        return stuffRepository.save(stuffSkeleton);
+    }
+
+
+    public Stuff fetchStuff(Stuff stuff) {
+        if (stuff == null)
+            return null;
+        if (stuffRepository.findById(stuff.getId()).isEmpty())
+            throw new RuntimeException("Something went wrong");
+        stuff.setAdultClothesId(stuffRepository.findById(stuff.getId()).get().getAdultClothesId());
+        return stuffRepository.save(stuff);
     }
 
 

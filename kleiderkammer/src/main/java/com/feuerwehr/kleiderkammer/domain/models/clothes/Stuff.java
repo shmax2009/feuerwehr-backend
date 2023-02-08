@@ -49,7 +49,7 @@ public class Stuff {
         var obj = new JSONObject(parameters).toMap();
         var header = obj.get(name);
         if (header == null)
-            throw new NotFoundException("This parameter is not exist");
+            throw new RuntimeException("This parameter is not exist");
         return Parameter.fromMap((HashMap<String, String>) header);
 
     }
