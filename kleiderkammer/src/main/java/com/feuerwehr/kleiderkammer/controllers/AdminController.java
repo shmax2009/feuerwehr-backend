@@ -37,9 +37,7 @@ public class AdminController {
     }
 
     @GetMapping("/get/stuffs")
-    public List<StuffDTO> getStuffs() throws Exception {
-
-//        throw new Exception("Bla bla bla");
+    public List<StuffDTO> getStuffs() {
         return storeGetService.getStuffs().stream().map(StuffDTO::new).collect(Collectors.toList());
     }
 
@@ -48,7 +46,11 @@ public class AdminController {
         var result = errorHandler.handleUnpairStuff(id);
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeDeleteService.unpair(id);
+        try {
+            storeDeleteService.unpair(id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return result;
     }
 
@@ -57,16 +59,25 @@ public class AdminController {
         var result = errorHandler.handleSaveStuff(stuffDTO.toStuff());
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.saveStuff(stuffDTO.toStuff());
+        try {
+            storeSaveService.saveStuff(stuffDTO.toStuff());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return result;
     }
 
     @PutMapping("/put/stuff-user/{adultId}/{stuffId}")
-    public ResponseEntity<String> addStuffToUser(@PathVariable(value = "adultId") Integer adultId, @PathVariable(value = "stuffId") Integer stuffId) {
+    public ResponseEntity<String> addStuffToUser(@PathVariable(value = "adultId") Integer
+                                                     adultId, @PathVariable(value = "stuffId") Integer stuffId) {
         var result = errorHandler.handleAddStuffToUser(adultId, stuffId);
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.addStuffToAdult(stuffId, adultId);
+        try {
+            storeSaveService.addStuffToAdult(stuffId, adultId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -75,7 +86,11 @@ public class AdminController {
         var result = errorHandler.handleFetchStuff(stuff.toStuff());
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.fetchStuff(stuff.toStuff());
+        try {
+            storeSaveService.fetchStuff(stuff.toStuff());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return result;
     }
 
@@ -84,7 +99,12 @@ public class AdminController {
         var result = errorHandler.handleFetchAdultInfo(adultInfoDTO.toAdultInfo());
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.fetchAdultInfo(adultInfoDTO.toAdultInfo());
+
+        try {
+            storeSaveService.fetchAdultInfo(adultInfoDTO.toAdultInfo());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return result;
     }
 
