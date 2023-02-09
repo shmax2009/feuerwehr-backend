@@ -1,7 +1,9 @@
 package com.feuerwehr.kleiderkammer.controllers;
 
+import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.StuffValidator;
+import com.feuerwehr.kleiderkammer.domain.repository.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.AdultRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.clothes.StuffRepository;
 import jakarta.transaction.Transactional;
@@ -18,6 +20,7 @@ import java.util.Objects;
 @Transactional
 @Slf4j
 public class ErrorHandler {
+    private final AdultInfoRepository adultInfoRepository;
     private final AdultRepository adultRepository;
     private final StuffRepository stuffRepository;
 
@@ -90,6 +93,14 @@ public class ErrorHandler {
 
         if (stuff.getAdultClothesId() != null)
             return ResponseEntity.badRequest().body("Can not add stuff, this stuff already used");
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> handleFetchAdultInfo(AdultInfo adultInfo) {
+        var adultInfoOptional = adultInfoRepository.findById(adultInfo.getId());
+        if (adultInfoOptional.isEmpty())
+            return ResponseEntity.badRequest().body("Can not fetch adult info, it's not exist");
 
         return ResponseEntity.ok().build();
     }

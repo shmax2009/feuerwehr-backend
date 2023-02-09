@@ -1,8 +1,11 @@
 package com.feuerwehr.kleiderkammer.controllers;
 
 
-import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
+import com.feuerwehr.kleiderkammer.domain.models.Adult;
+import com.feuerwehr.kleiderkammer.domain.models.AdultClothes;
+import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
 import com.feuerwehr.kleiderkammer.domain.models.dto.AdultDTO;
+import com.feuerwehr.kleiderkammer.domain.models.dto.AdultInfoDTO;
 import com.feuerwehr.kleiderkammer.domain.models.dto.StuffDTO;
 import com.feuerwehr.kleiderkammer.services.StoreDeleteService;
 import com.feuerwehr.kleiderkammer.services.StoreGetService;
@@ -68,12 +71,28 @@ public class AdminController {
     }
 
     @PatchMapping("/patch/stuff")
-    public ResponseEntity<String> patchStuff(@RequestBody Stuff stuff) {
-        var result = errorHandler.handleFetchStuff(stuff);
+    public ResponseEntity<String> patchStuff(@RequestBody StuffDTO stuff) {
+        var result = errorHandler.handleFetchStuff(stuff.toStuff());
         if (result.getStatusCode() != HttpStatus.OK)
             return result;
-        storeSaveService.fetchStuff(stuff);
+        storeSaveService.fetchStuff(stuff.toStuff());
         return result;
+    }
+
+    @PatchMapping("/patch/adultInfo")
+    public ResponseEntity<String> patchAdultInfo(@RequestBody AdultInfoDTO adultInfoDTO) {
+        var result = errorHandler.handleFetchAdultInfo(adultInfoDTO.toAdultInfo());
+        if (result.getStatusCode() != HttpStatus.OK)
+            return result;
+        storeSaveService.fetchAdultInfo(adultInfoDTO.toAdultInfo());
+        return result;
+    }
+
+
+    @PutMapping("/put/adult")
+    public ResponseEntity<String> putAdult() {
+        storeSaveService.saveAdult(new Adult(new AdultInfo(), new AdultClothes()));
+        return ResponseEntity.ok().build();
     }
 //
 //

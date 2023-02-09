@@ -223,5 +223,13 @@ public class StoreSaveService {
         return stuffRepository.save(stuff);
     }
 
+    public AdultInfo fetchAdultInfo(AdultInfo adultInfo) {
+        if (adultInfo == null)
+            return null;
+        if (adultInfoRepository.findById(adultInfo.getId()).isEmpty())
+            throw new RuntimeException("Something went wrong");
+        return adultInfoRepository.save(adultInfo);
+    }
+
 
 }
