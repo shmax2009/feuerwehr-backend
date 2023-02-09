@@ -46,3 +46,4 @@ auth:
     secret-key: "404E637776556A586E327235753872AF413F4428472B4B6250645367566B5970"
     auth-token-expiration: 900000
     refresh-token-expiration: 3600000
+

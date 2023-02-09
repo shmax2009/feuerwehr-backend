@@ -22,12 +22,15 @@ public class AuthenticationController {
 //    ) {
 //        return ResponseEntity.ok(service.register(request));
 //    }
+
+//    @CrossOrigin
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
         return service.authenticate(request);
     }
 
 
+//    @CrossOrigin
     @PostMapping("/refresh")
     public ResponseEntity<AuthenticationResponse> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return service.refresh(auth);

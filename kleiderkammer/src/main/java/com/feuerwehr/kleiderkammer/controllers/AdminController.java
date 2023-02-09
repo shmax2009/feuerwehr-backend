@@ -30,7 +30,7 @@ public class AdminController {
 
     private final ErrorHandler errorHandler;
 
-    //
+
     @GetMapping("/get/adults")
     public List<AdultDTO> getAdults() {
         return storeGetService.getAdults().stream().map(AdultDTO::new).collect(Collectors.toList());
@@ -41,6 +41,7 @@ public class AdminController {
         return storeGetService.getStuffs().stream().map(StuffDTO::new).collect(Collectors.toList());
     }
 
+    @CrossOrigin
     @PatchMapping("/patch/unpair-stuff/{id}")
     public ResponseEntity<String> unpair(@PathVariable(value = "id") Integer id) {
         var result = errorHandler.handleUnpairStuff(id);
@@ -54,6 +55,7 @@ public class AdminController {
         return result;
     }
 
+    @CrossOrigin
     @PutMapping("/put/stuff")
     public ResponseEntity<String> saveStuff(@RequestBody StuffDTO stuffDTO) {
         var result = errorHandler.handleSaveStuff(stuffDTO.toStuff());
@@ -67,6 +69,7 @@ public class AdminController {
         return result;
     }
 
+    @CrossOrigin
     @PutMapping("/put/stuff-user/{adultId}/{stuffId}")
     public ResponseEntity<String> addStuffToUser(@PathVariable(value = "adultId") Integer
                                                      adultId, @PathVariable(value = "stuffId") Integer stuffId) {
@@ -81,6 +84,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @CrossOrigin
     @PatchMapping("/patch/stuff")
     public ResponseEntity<String> patchStuff(@RequestBody StuffDTO stuff) {
         var result = errorHandler.handleFetchStuff(stuff.toStuff());
@@ -94,6 +98,7 @@ public class AdminController {
         return result;
     }
 
+    @CrossOrigin
     @PatchMapping("/patch/adultInfo")
     public ResponseEntity<String> patchAdultInfo(@RequestBody AdultInfoDTO adultInfoDTO) {
         var result = errorHandler.handleFetchAdultInfo(adultInfoDTO.toAdultInfo());
@@ -108,7 +113,7 @@ public class AdminController {
         return result;
     }
 
-
+    @CrossOrigin
     @PutMapping("/put/adult")
     public ResponseEntity<String> putAdult() {
         storeSaveService.saveAdult(new Adult(new AdultInfo(), new AdultClothes()));

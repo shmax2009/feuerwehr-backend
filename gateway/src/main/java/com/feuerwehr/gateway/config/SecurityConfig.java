@@ -14,6 +14,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 
 import java.net.URI;
 
@@ -26,9 +27,7 @@ public class SecurityConfig {
     private final APIRouter APIRouter;
     private final DiscoveryClient discoveryClient;
 
-    private URI getURI(String service) {
-        return discoveryClient.getInstances(service).get(0).getUri();
-    }
+    private final CorsWebFilter corsWebFilter;
 
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, AuthConverter jwtAuthConverter,
@@ -39,21 +38,22 @@ public class SecurityConfig {
 
         http.authorizeExchange(auth -> {
 
-                    for (var api : APIRouter.getApis()) {
-                        auth.pathMatchers("/api/" + api.getVersion() + "/auth/**").permitAll();
-                        for (var path : api.getRoutes()) {
-                            auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
-                            auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/admin/**").hasAnyAuthority("ROLE_ADMIN");
-                            auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/public/**").permitAll();
-                        }
+                for (var api : APIRouter.getApis()) {
+                    auth.pathMatchers("/api/" + api.getVersion() + "/auth/**").permitAll();
+                    for (var path : api.getRoutes()) {
+                        auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+                        auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/admin/**").hasAnyAuthority("ROLE_ADMIN");
+                        auth.pathMatchers("/api" + "/" + api.getVersion() + "/" + path.getUrl() + "/public/**").permitAll();
                     }
-                    auth.anyExchange().authenticated();
-                })
-                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-                .httpBasic().disable()
-                .formLogin().disable()
-                .csrf().disable()
-                .cors().disable();
+                }
+                auth.anyExchange().authenticated();
+            })
+            .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            .addFilterBefore(corsWebFilter, SecurityWebFiltersOrder.CORS)
+            .httpBasic().disable()
+            .formLogin().disable()
+            .csrf().disable()
+            .cors().disable();
 
         return http.build();
     }
