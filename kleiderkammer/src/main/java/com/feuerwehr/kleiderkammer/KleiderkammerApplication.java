@@ -1,11 +1,13 @@
 package com.feuerwehr.kleiderkammer;
 
+import com.feuerwehr.kleiderkammer.domain.enums.Achivement;
 import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
-import com.feuerwehr.kleiderkammer.domain.models.Adult;
-import com.feuerwehr.kleiderkammer.domain.models.AdultClothes;
-import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
-import com.feuerwehr.kleiderkammer.domain.models.clothes.Parameter;
+import com.feuerwehr.kleiderkammer.domain.models.adult.Adult;
+import com.feuerwehr.kleiderkammer.domain.models.adult.AdultInfo;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
+import com.feuerwehr.kleiderkammer.domain.models.kid.Kid;
+import com.feuerwehr.kleiderkammer.domain.models.kid.KidClothes;
+import com.feuerwehr.kleiderkammer.domain.models.kid.KidInfo;
 import com.feuerwehr.kleiderkammer.services.StoreGetService;
 import com.feuerwehr.kleiderkammer.services.StoreSaveService;
 import org.springframework.boot.CommandLineRunner;
@@ -26,56 +28,66 @@ public class KleiderkammerApplication {
     @Bean
     CommandLineRunner runner(StoreSaveService storeSaveService, StoreGetService storeGetService) {
         return args -> {
+            /*
+            storeSaveService.saveKid(Kid.builder()
+                .info(KidInfo.builder()
+                    .name("Maksym")
+                    .surname("Shvedchenko")
+                    .age(14L)
+                    .build())
 
+                .clothes(KidClothes.builder()
+                    .pullover(Stuff.builder()
+                        .model("Guuchi")
+                        .size(777)
+                        .type(StuffType.Pullover)
+                        .build())
+                    .build())
+                .build());
 
+            /*
+            try {
+                storeSaveService.saveAdult(Adult.builder()
+                    .adultInfo(
+                        AdultInfo.builder()
+                            .name("Maksym")
+                            .surname("Shvedchenko")
+                            .age(14L)
+                            .build()
+                    )
+                    .adultClothes(
+                        AdultClothes.builder()
+                            .helmet(Stuff.builder()
+                                .model("The best")
+                                .batchCode(777777)
+                                .size(3000)
+                                .additionalInfo("The best")
+                                .type(StuffType.Helm)
+                                .parameter(new Parameter(Boolean.class.getSimpleName(), "X", "false"))
+                                .build())
+                            .combatJacket(Stuff.builder()
+                                .model("The best 2")
+                                .batchCode(666666)
+                                .size(3000)
+                                .additionalInfo("The best 2")
+                                .type(StuffType.Einsatzjacke)
+                                .build())
+                            .build()
+                    )
+                    .build()
+                );
             storeSaveService.saveAdult(Adult.builder()
-                .adultInfo(
-                    AdultInfo.builder()
-                        .name("Maksym")
-                        .surname("Shvedchenko")
-                        .age(14L)
-                        .build()
-                )
-                .adultClothes(
-                    AdultClothes.builder()
-                        .helmet(Stuff.builder()
-                            .model("The best")
-                            .batchCode(777777)
-                            .size(3000)
-                            .additionalInfo("The best")
-                            .type(StuffType.Helm)
-                            .parameter(new Parameter(Boolean.class.getSimpleName(), "X", "false"))
-                            .build())
-                        .combatJacket(Stuff.builder()
-                            .model("The best 2")
-                            .batchCode(666666)
-                            .size(3000)
-                            .additionalInfo("The best 2")
-                            .type(StuffType.Einsatzjacke)
-                            .build())
-                        .build()
-                )
-                .build()
-            );
-            storeSaveService.saveAdult(Adult.builder()
-                .adultInfo(
+                .info(
                     AdultInfo.builder()
                         .name("Chris")
                         .surname("Wegener")
                         .age(24L)
+                        .achivement(Achivement.Atemschutz)
                         .build()
                 )
                 .build()
             );
-//            storeSaveService.saveStuff(new Helmet(null, "Schuhbert", "fdfd", "fdfd", 213L, "fd"));
-//            storeSaveService.saveStuff(new Jacket(null, "Schuhbert", "fdfd", "fdfd", 213L, "fd"));
-//            storeSaveService.saveStuff(new PATrousers(null, "Schuhbert", "fdfd", "fdfd", 213L, "fd"));
-//            storeSaveService.saveAdult(new Adult(storeSaveService.saveAdultInfo(new AdultInfo("Maksym", "Shvedchenko"
-//                    , 14L))));
-//
-//            storeSaveService.addStuffToAdult(StuffKind.Helmet, 213L, "Maksym", "Shvedchenko");
-//            storeSaveService.addStuffToAdult(StuffKind.Jacket, 213L, "Maksym", "Shvedchenko");
-//            storeSaveService.addStuffToAdult(StuffKind.PATrousers, 213L, "Maksym", "Shvedchenko");
+            */
         };
     }
 

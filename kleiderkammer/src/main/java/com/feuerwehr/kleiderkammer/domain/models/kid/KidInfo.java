@@ -1,12 +1,10 @@
-package com.feuerwehr.kleiderkammer.domain.models;
+package com.feuerwehr.kleiderkammer.domain.models.kid;
 
-import com.feuerwehr.kleiderkammer.domain.enums.Achivement;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
-
 
 @Entity
 @Data
@@ -14,34 +12,24 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdultInfo {
-
+public class KidInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     private String name;
 
     private String surname;
     private Long age;
-    private Achivement achivement;
 
-    public AdultInfo(String name, String surname) {
+    public KidInfo(String name, String surname) {
         this.name = name;
         this.surname = surname;
     }
 
-    public AdultInfo(String name, String surname, Long age) {
+    public KidInfo(String name, String surname, Long age) {
         this.name = name;
         this.surname = surname;
         this.age = age;
-    }
-
-    public AdultInfo(String name, String surname, Long age, Achivement _achivement) {
-        this.name = name;
-        this.surname = surname;
-        this.age = age;
-        achivement = _achivement;
     }
 }
-
-

@@ -1,6 +1,7 @@
-package com.feuerwehr.kleiderkammer.domain.models.dto;
+package com.feuerwehr.kleiderkammer.domain.models.dto.adult;
 
-import com.feuerwehr.kleiderkammer.domain.models.AdultClothes;
+import com.feuerwehr.kleiderkammer.domain.models.adult.AdultClothes;
+import com.feuerwehr.kleiderkammer.domain.models.dto.StuffDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

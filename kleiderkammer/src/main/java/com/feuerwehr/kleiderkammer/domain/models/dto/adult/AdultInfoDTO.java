@@ -1,7 +1,7 @@
-package com.feuerwehr.kleiderkammer.domain.models.dto;
+package com.feuerwehr.kleiderkammer.domain.models.dto.adult;
 
 import com.feuerwehr.kleiderkammer.domain.enums.Achivement;
-import com.feuerwehr.kleiderkammer.domain.models.AdultInfo;
+import com.feuerwehr.kleiderkammer.domain.models.adult.AdultInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

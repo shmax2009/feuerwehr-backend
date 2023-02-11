@@ -35,4 +35,6 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return service.refresh(auth);
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.feuerwehr.kleiderkammer.domain.models;
+package com.feuerwehr.kleiderkammer.domain.models.adult;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -19,17 +19,14 @@ public class Adult {
     private Integer id;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private AdultInfo adultInfo;
+    private AdultInfo info;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private AdultClothes adultClothes;
+    private AdultClothes clothes;
 
-    public Adult(AdultInfo adultInfo) {
-        this.adultInfo = adultInfo;
-    }
 
-    public Adult(AdultInfo adultInfo, AdultClothes adultClothes) {
-        this.adultInfo = adultInfo;
-        this.adultClothes = adultClothes;
+    public Adult(AdultInfo info, AdultClothes clothes) {
+        this.info = info;
+        this.clothes = clothes;
     }
 }

@@ -1,4 +1,4 @@
-package com.feuerwehr.kleiderkammer.domain.models.dto;
+package com.feuerwehr.kleiderkammer.domain.models.dto.adult;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

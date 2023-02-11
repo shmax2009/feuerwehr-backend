@@ -36,7 +36,7 @@ public class StuffDTO {
     private List<Parameter> parameters;
 
     //    private Map<String, Object> parameters;
-    private Integer adultClothesId;
+    private Integer clothesId;
 
     public StuffDTO(Stuff stuff) {
         if (stuff == null)
@@ -48,7 +48,7 @@ public class StuffDTO {
         date = stuff.getDate();
         additionalInfo = stuff.getAdditionalInfo();
         stuffType = stuff.getStuffType();
-        adultClothesId = stuff.getAdultClothesId();
+        clothesId = stuff.getClothesId();
         if (stuff.getParameters() != null) {
             parameters = new ArrayList<>();
             var paramMap = new JSONObject(stuff.getParameters()).toMap();
@@ -61,7 +61,7 @@ public class StuffDTO {
 
 
     public Stuff toStuff() {
-        var stuff = new Stuff(id, model, size, batchCode, date, additionalInfo, stuffType, null, adultClothesId);
+        var stuff = new Stuff(id, model, size, batchCode, date, additionalInfo, stuffType, null, clothesId);
         stuff.setParameters(parameters);
         return stuff;
     }

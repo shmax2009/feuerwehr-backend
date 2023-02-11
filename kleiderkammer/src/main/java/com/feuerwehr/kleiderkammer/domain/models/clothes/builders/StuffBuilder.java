@@ -17,7 +17,7 @@ public final class StuffBuilder {
     private String additionalInfo;
     private StuffType stuffType;
     private List<Parameter> parameters;
-    private Integer adultClothesId;
+    private Integer clothesId;
 
     public StuffBuilder() {
     }
@@ -70,8 +70,8 @@ public final class StuffBuilder {
         return this;
     }
 
-    public StuffBuilder adultClothesId(Integer adultClothesId) {
-        this.adultClothesId = adultClothesId;
+    public StuffBuilder clothesId(Integer clothesId) {
+        this.clothesId = clothesId;
         return this;
     }
 
@@ -85,7 +85,7 @@ public final class StuffBuilder {
         stuff.setAdditionalInfo(additionalInfo);
         stuff.setStuffType(stuffType);
         stuff.setParameters(parameters);
-        stuff.setAdultClothesId(adultClothesId);
+        stuff.setClothesId(clothesId);
         return stuff;
     }
 }

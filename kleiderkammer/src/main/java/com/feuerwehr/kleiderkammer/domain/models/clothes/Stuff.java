@@ -4,7 +4,6 @@ package com.feuerwehr.kleiderkammer.domain.models.clothes;
 import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.builders.StuffBuilder;
 import jakarta.persistence.*;
-import jakarta.ws.rs.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,7 +40,7 @@ public class Stuff {
 
     private String parameters;
 
-    private Integer adultClothesId;
+    private Integer clothesId;
 
     public Parameter getParameter(String name) {
         if (parameters == null)

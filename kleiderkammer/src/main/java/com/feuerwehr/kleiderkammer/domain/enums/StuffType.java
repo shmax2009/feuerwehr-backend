@@ -10,4 +10,19 @@ public enum StuffType {
     HandschuheBrandbekämpfung,
     Handschuhe,
 
+    JugendHelm,
+    JugendJackeSommer,
+    JugendParkaWinter,
+    JugendHose,
+    JugendHandschuhe,
+    JugendMütze,
+    JugendPolo,
+
+
+    TShirt,
+    Pullover,
+    SoftshellJacke,
+    Cap
+
+
 }
