@@ -1,10 +1,21 @@
 package com.feuerwehr.kleiderkammer.domain.models.clothes;
 
+import com.feuerwehr.kleiderkammer.domain.repository.clothes.StuffRepository;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.util.Objects;
 
-public class StuffValidator {
 
-    public static String validateStuff(Stuff stuff) {
+@Service
+@Slf4j
+@AllArgsConstructor
+public class StuffValidator {
+    private final StuffRepository stuffRepository;
+
+
+    public String validateStuffForSave(Stuff stuff) {
 
         if (stuff == null)
             return "Can not save stuff, this stuff is null";
@@ -15,7 +26,67 @@ public class StuffValidator {
         if (stuff.getBatchCode() == null)
             return "Can not save stuff, stuff's batchCode is null";
 
+        if (stuffRepository.findByBatchCode(stuff.getBatchCode()).isPresent())
+            return "Can not save stuff, stuff's batchCode already in use";
 
+
+        if (stuff.getId() != null)
+            return "Can not save stuff,you can not set ids";
+
+        if (stuff.getClothesId() != null)
+            return "Can not save stuff,you can not set clothes id";
+
+        if (stuff.getPersonType() != null)
+            return "Can not save stuff,you can not set clothes person type";
+
+        return validateStuff(stuff);
+    }
+
+
+    public String validateStuffForFetch(Stuff stuff) {
+
+        if (stuff == null)
+            return "Can not fetch stuff, this stuff is null";
+
+        if (stuff.getStuffType() == null)
+            return "Can not fetch stuff, stuff type is null";
+
+        if (stuff.getBatchCode() == null)
+            return "Can not fetch stuff, stuff's batchCode is null";
+
+        if (stuff.getId() == null)
+            return "Can not fetch stuff, can not find stuff(id is null)";
+
+
+        var currentStuffOpt = stuffRepository.findById(stuff.getId());
+
+        if (currentStuffOpt.isEmpty())
+            return "Can not fetch stuff, can not find stuff(not exist id)";
+
+        var curentStuff = currentStuffOpt.get();
+
+        if (curentStuff.getStuffType() != stuff.getStuffType())
+            return "Can not fetch stuff, you can not change stuff type";
+
+        if (!Objects.equals(null, stuff.getClothesId()))
+            return "Can not fetch stuff, you can not change person to whom belongs this stuff";
+
+        if (!Objects.equals(null, stuff.getPersonType()))
+            return "Can not fetch stuff, you can not change person to whom belongs this stuff";
+
+        stuff.setPersonType(curentStuff.getPersonType());
+        stuff.setClothesId(curentStuff.getClothesId());
+
+        if (!Objects.equals(curentStuff.getBatchCode(), stuff.getBatchCode())) {
+            if (stuffRepository.findByBatchCode(stuff.getBatchCode()).isPresent())
+                return "Can not fetch stuff,you can not use already exist batchCode from another stuff";
+        }
+
+        return validateStuff(stuff);
+    }
+
+
+    private static String validateStuff(Stuff stuff) {
         switch (stuff.getStuffType()) {
 
             case Helm -> {
@@ -35,6 +106,7 @@ public class StuffValidator {
             }
         }
     }
+
 
     static String helmValidator(Stuff stuff) {
         String visierResult = validateParameter(stuff, "Visier", Boolean.class);

@@ -42,7 +42,12 @@ public class AdultClothes {
 
 
     public void setStuff(Stuff stuff) {
-        switch (stuff.getStuffType()) {
+        setStuff(stuff, stuff.getStuffType());
+    }
+
+
+    public void setStuff(Stuff stuff, StuffType type) {
+        switch (type) {
             case Helm -> {
                 setHelmet(stuff);
             }

@@ -2,7 +2,6 @@ package com.feuerwehr.kleiderkammer.domain.models.kid;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.feuerwehr.kleiderkammer.domain.models.adult.AdultClothes;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,4 +30,5 @@ public class Kid {
         this.info = info;
         this.clothes = clothes;
     }
+
 }

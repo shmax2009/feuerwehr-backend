@@ -1,12 +1,6 @@
 package com.feuerwehr.kleiderkammer.controllers;
 
-import com.feuerwehr.kleiderkammer.domain.models.adult.Adult;
-import com.feuerwehr.kleiderkammer.domain.models.adult.AdultClothes;
-import com.feuerwehr.kleiderkammer.domain.models.adult.AdultInfo;
 import com.feuerwehr.kleiderkammer.domain.models.dto.StuffDTO;
-import com.feuerwehr.kleiderkammer.domain.models.kid.Kid;
-import com.feuerwehr.kleiderkammer.domain.models.kid.KidClothes;
-import com.feuerwehr.kleiderkammer.domain.models.kid.KidInfo;
 import com.feuerwehr.kleiderkammer.services.StoreDeleteService;
 import com.feuerwehr.kleiderkammer.services.StoreGetService;
 import com.feuerwehr.kleiderkammer.services.StoreSaveService;
@@ -15,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,30 +21,23 @@ public class AdminPutController {
     private final StoreGetService storeGetService;
     private final StoreDeleteService storeDeleteService;
 
-    private final ErrorHandler errorHandler;
 
 
     @PutMapping("/stuff")
     public ResponseEntity<String> saveStuff(@RequestBody StuffDTO stuffDTO) {
-        var result = errorHandler.handleSaveStuff(stuffDTO.toStuff());
-        if (result.getStatusCode() != HttpStatus.OK)
-            return result;
         try {
             storeSaveService.saveStuff(stuffDTO.toStuff());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return result;
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/stuff-adult/{adultId}/{stuffId}")
     public ResponseEntity<String> addStuffToAdult(@PathVariable(value = "adultId") Integer
                                                       adultId, @PathVariable(value = "stuffId") Integer stuffId) {
-        var result = errorHandler.handleAddStuffToAdult(adultId, stuffId);
-        if (result.getStatusCode() != HttpStatus.OK)
-            return result;
         try {
-            storeSaveService.addStuffToAdult(stuffId, adultId);
+            storeSaveService.pairStuffToAdult(adultId, stuffId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -62,11 +48,8 @@ public class AdminPutController {
     @PutMapping("/stuff-kid/{kidId}/{stuffId}")
     public ResponseEntity<String> addStuffToKid(@PathVariable(value = "kidId") Integer
                                                     kidId, @PathVariable(value = "stuffId") Integer stuffId) {
-        var result = errorHandler.handleAddStuffToKid(kidId, stuffId);
-        if (result.getStatusCode() != HttpStatus.OK)
-            return result;
         try {
-            storeSaveService.addStuffToKid(stuffId, kidId);
+            storeSaveService.pairStuffToKid(kidId, stuffId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -77,8 +60,7 @@ public class AdminPutController {
     @PutMapping("/adult")
     public ResponseEntity<String> putAdult(@RequestBody UserCreate userCreate) {
         try {
-            storeSaveService.saveAdult(new Adult(new AdultInfo(userCreate.getName(), userCreate.getSurname()),
-                new AdultClothes()));
+            storeSaveService.addNewAdult(userCreate.getName(), userCreate.getSurname());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -88,8 +70,7 @@ public class AdminPutController {
     @PutMapping("/kid")
     public ResponseEntity<String> putKid(@RequestBody UserCreate userCreate) {
         try {
-            storeSaveService.saveKid(new Kid(new KidInfo(userCreate.getName(), userCreate.getSurname()),
-                new KidClothes()));
+            storeSaveService.addNewKid(userCreate.getName(), userCreate.getSurname());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

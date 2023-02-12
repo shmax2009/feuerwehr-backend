@@ -6,6 +6,8 @@ import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @Builder

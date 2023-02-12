@@ -1,5 +1,6 @@
 package com.feuerwehr.kleiderkammer.domain.models.dto;
 
+import com.feuerwehr.kleiderkammer.domain.enums.PersonType;
 import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Parameter;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
@@ -38,6 +39,9 @@ public class StuffDTO {
     //    private Map<String, Object> parameters;
     private Integer clothesId;
 
+
+    private PersonType personType;
+
     public StuffDTO(Stuff stuff) {
         if (stuff == null)
             return;
@@ -49,6 +53,7 @@ public class StuffDTO {
         additionalInfo = stuff.getAdditionalInfo();
         stuffType = stuff.getStuffType();
         clothesId = stuff.getClothesId();
+        personType = stuff.getPersonType();
         if (stuff.getParameters() != null) {
             parameters = new ArrayList<>();
             var paramMap = new JSONObject(stuff.getParameters()).toMap();
@@ -61,7 +66,7 @@ public class StuffDTO {
 
 
     public Stuff toStuff() {
-        var stuff = new Stuff(id, model, size, batchCode, date, additionalInfo, stuffType, null, clothesId);
+        var stuff = new Stuff(id, model, size, batchCode, date, additionalInfo, stuffType, null, clothesId, personType);
         stuff.setParameters(parameters);
         return stuff;
     }

@@ -24,8 +24,6 @@ public class AdminGetController {
     private final StoreGetService storeGetService;
     private final StoreDeleteService storeDeleteService;
 
-    private final ErrorHandler errorHandler;
-
 
     @GetMapping("/adults")
     public List<AdultDTO> getAdults() {

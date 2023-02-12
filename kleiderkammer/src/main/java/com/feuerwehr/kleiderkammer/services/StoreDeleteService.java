@@ -1,8 +1,10 @@
 package com.feuerwehr.kleiderkammer.services;
 
 
-import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
+import com.feuerwehr.kleiderkammer.domain.enums.PersonType;
+import com.feuerwehr.kleiderkammer.domain.models.adult.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
+import com.feuerwehr.kleiderkammer.domain.models.kid.Kid;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultRepository;
@@ -14,6 +16,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,195 +32,138 @@ public class StoreDeleteService {
     private final AdultInfoRepository adultInfoRepository;
     private final StuffRepository stuffRepository;
 
-    private void deleteStuff(Stuff stuff) {
-        if (stuff == null) return;
-        unpairStuff(stuff);
-        stuffRepository.delete(stuff);
-    }
-
-    public void deleteStuff(Integer id) {
-        var stuff = stuffRepository.findById(id);
-        if (stuff.isEmpty()) {
-            throw new RuntimeException("Can not delete stuff: Stuff with this id dont exist");
-        }
-        deleteStuff(stuff.get());
+    void throwError(String message) throws Error {
+        log.error(message);
+        throw new RuntimeException(message);
     }
 
 
-    private Boolean unpairStuffAdult(Stuff stuff) {
-        if (stuff == null)
-            return false;
-        var id = stuff.getClothesId();
-
-        var adultClothesOptional = adultClothesRepository.findById(id);
-        if (adultClothesOptional.isEmpty())
-            return false;
-
-        var adultClothes = adultClothesOptional.get();
-
-
-        switch (stuff.getStuffType()) {
-
-            case Helm -> adultClothes.setHelmet(null);
-
-            case Einsatzjacke -> adultClothes.setCombatJacket(null);
-
-            case Einsatzhose -> adultClothes.setCombatTrousers(null);
-
-            case Überhose -> adultClothes.setTopTrousers(null);
-
-            case Feuerwehrstiefel -> adultClothes.setFirefightingBoots(null);
-
-            case Gurt -> adultClothes.setBelt(null);
-
-            case HandschuheBrandbekämpfung -> adultClothes.setFirefightingGloves(null);
-
-            case Handschuhe -> adultClothes.setGloves(null);
-
-        }
-        stuff.setClothesId(null);
-        stuffRepository.save(stuff);
-        adultClothesRepository.save(adultClothes);
-        return true;
-    }
-
-    private Boolean unpairStuffKid(Stuff stuff) {
-        if (stuff == null)
-            return false;
-        var id = stuff.getClothesId();
-
-        var kidClothesOptional = kidClothesRepository.findById(id);
-        if (kidClothesOptional.isEmpty())
-            return false;
-
-        var kidClothes = kidClothesOptional.get();
-
-        kidClothes.setStuff(null, stuff.getStuffType());
-
-        stuff.setClothesId(null);
-        stuffRepository.save(stuff);
-        kidClothesRepository.save(kidClothes);
-        return true;
-    }
-
-
-    private void unpairStuff(Stuff stuff) {
-        if (stuff == null) {
+    //    Stuff is always normal because its from database
+    private void unpairStuff(Optional<Stuff> stuffOptional) {
+        if (stuffOptional.isEmpty()) {
+//            throwError("Can not unpair stuff, it's null");
             return;
         }
-        if (unpairStuffAdult(stuff))
+        var stuff = stuffOptional.get();
+
+        if (stuff.getPersonType() == null) {
+            throwError("Can not unpair stuff,it's not paired");
             return;
-        unpairStuffKid(stuff);
+        }
+        if (stuff.getClothesId() == null) {
+            throwError("Can not unpair stuff,it's not paired");
+            return;
+        }
+
+
+        if (stuff.getPersonType() == PersonType.Adult) {
+            var adultClothesOpt = adultClothesRepository.findById(stuff.getClothesId());
+            if (adultClothesOpt.isEmpty()) {
+                throwError("Something went wrong");
+                return;
+            }
+            var adultClothes = adultClothesOpt.get();
+            adultClothes.setStuff(null, stuff.getStuffType());
+            adultClothesRepository.save(adultClothes);
+            stuff.setPersonType(null);
+            stuff.setClothesId(null);
+            stuffRepository.save(stuff);
+        } else if (stuff.getPersonType() == PersonType.Kid) {
+            var kidClothesOpt = kidClothesRepository.findById(stuff.getClothesId());
+            if (kidClothesOpt.isEmpty()) {
+                throwError("Something went wrong");
+                return;
+            }
+            var kidClothes = kidClothesOpt.get();
+            kidClothes.setStuff(null, stuff.getStuffType());
+            kidClothesRepository.save(kidClothes);
+            stuff.setPersonType(null);
+            stuff.setClothesId(null);
+            stuffRepository.save(stuff);
+        }
     }
 
-    public void unpair(Integer id) {
-        var stuff = stuffRepository.findById(id);
-        if (stuff.isEmpty())
-            throw new RuntimeException("Can not unpair stuff: stuff dont exist");
-
-        unpairStuff(stuff.get());
+    public void unpairStuff(Integer stuffId) {
+        unpairStuff(stuffRepository.findById(stuffId));
     }
 
 
-    public void deleteAdult(Integer id) {
-        var adultOptional = adultRepository.findById(id);
-
-        if (adultOptional.isEmpty())
-            throw new RuntimeException("Can not delete adult: this adult dont exist");
+    private void deleteAdult(Optional<Adult> adultOptional) {
+        if (adultOptional.isEmpty()) {
+            throwError("Can not delete adult,he don't exist");
+            return;
+        }
 
         var adult = adultOptional.get();
 
-        deleteAdultClothes(adult.getClothes().getId());
-//        adult.setAdultClothes(null);
-        deleteAdultInfo(adult.getInfo().getId());
-//        adult.setAdultInfo(null);
+        adultInfoRepository.delete(adult.getInfo());
+        var adultClothes = adult.getClothes();
+        unpairStuff(Optional.ofNullable(adultClothes.getGloves()));
+        unpairStuff(Optional.ofNullable(adultClothes.getHelmet()));
+        unpairStuff(Optional.ofNullable(adultClothes.getCombatJacket()));
+        unpairStuff(Optional.ofNullable(adultClothes.getBelt()));
+        unpairStuff(Optional.ofNullable(adultClothes.getFirefightingBoots()));
+        unpairStuff(Optional.ofNullable(adultClothes.getFirefightingGloves()));
+        unpairStuff(Optional.ofNullable(adultClothes.getTopTrousers()));
+        unpairStuff(Optional.ofNullable(adultClothes.getCombatTrousers()));
+//        TODO
+        adultClothesRepository.delete(adultClothes);
 
         adultRepository.delete(adult);
 
     }
 
-
-    private void deleteAdultInfo(Integer id) {
-        if (!adultInfoRepository.existsById(id))
-            throw new RuntimeException("Can not delete adult: this adult dont have a adultInfo");
-        adultInfoRepository.deleteById(id);
+    public void deleteAdult(Integer adultId) {
+        deleteAdult(adultRepository.findById(adultId));
     }
 
 
-    private void deleteAdultClothes(Integer id) {
+    public void deleteStuff(Integer stuffId) {
+        Optional<Stuff> stuff = stuffRepository.findById(stuffId);
+        if (stuff.isEmpty()) {
+            throwError("Can not delete stuff, he is null");
+            return;
+        }
+        Stuff s = stuff.get();
+        if (s.getClothesId() != null)
+            unpairStuff(stuff);
 
-        var adultClothesOptional = adultClothesRepository.findById(id);
-
-        if (adultClothesOptional.isEmpty())
-            throw new RuntimeException("Can not delete adult: this adult dont have a adultInfo");
-
-        var adultClothes = adultClothesOptional.get();
-        unpairStuff(adultClothes.getGloves());
-        unpairStuff(adultClothes.getHelmet());
-        unpairStuff(adultClothes.getCombatJacket());
-        unpairStuff(adultClothes.getBelt());
-        unpairStuff(adultClothes.getFirefightingBoots());
-        unpairStuff(adultClothes.getFirefightingGloves());
-        unpairStuff(adultClothes.getTopTrousers());
-        unpairStuff(adultClothes.getCombatTrousers());
-
-
-//        adultClothes.setGloves(null);
-//        adultClothes.setHelmet(null);
-//        adultClothes.setBelt(null);
-//        adultClothes.setCombatTrousers(null);
-//        adultClothes.setTopTrousers(null);
-//        adultClothes.setFirefightingBoots(null);
-//        adultClothes.setFirefightingGloves(null);
-//        adultClothes.setCombatJacket(null);
-
-        adultClothesRepository.deleteById(id);
+        stuffRepository.delete(s);
     }
 
-    public void deleteKid(Integer id) {
-        var kidOptional = kidRepository.findById(id);
 
-        if (kidOptional.isEmpty())
-            throw new RuntimeException("Can not delete kid: this kid dont exist");
+    private void deleteKid(Optional<Kid> kidOptional) {
+        if (kidOptional.isEmpty()) {
+            throwError("Can not delete kid,he don't exist");
+            return;
+        }
 
         var kid = kidOptional.get();
 
-        deleteKidClothes(kid.getClothes().getId());
-//        adult.setAdultClothes(null);
-        deleteKidInfo(kid.getInfo().getId());
-//        adult.setAdultInfo(null);
+        kidInfoRepository.delete(kid.getInfo());
+        var kidClothes = kid.getClothes();
+        unpairStuff(Optional.ofNullable(kidClothes.getHat()));
+        unpairStuff(Optional.ofNullable(kidClothes.getJacket()));
+        unpairStuff(Optional.ofNullable(kidClothes.getCap()));
+        unpairStuff(Optional.ofNullable(kidClothes.getPolo()));
+        unpairStuff(Optional.ofNullable(kidClothes.getParka()));
+        unpairStuff(Optional.ofNullable(kidClothes.getPullover()));
+        unpairStuff(Optional.ofNullable(kidClothes.getGloves()));
+        unpairStuff(Optional.ofNullable(kidClothes.getTrousers()));
+        unpairStuff(Optional.ofNullable(kidClothes.getFirefightingBoots()));
+        unpairStuff(Optional.ofNullable(kidClothes.getTShirt()));
+        unpairStuff(Optional.ofNullable(kidClothes.getSoftShellJacket()));
+        unpairStuff(Optional.ofNullable(kidClothes.getCap()));
+
+//        TODO
+        kidClothesRepository.delete(kidClothes);
 
         kidRepository.delete(kid);
+
     }
 
-    private void deleteKidInfo(Integer id) {
-        if (!kidInfoRepository.existsById(id))
-            throw new RuntimeException("Can not delete kid: this kid dont have a kidInfo");
-        kidInfoRepository.deleteById(id);
+    public void deleteKid(Integer kidId) {
+        deleteKid(kidRepository.findById(kidId));
     }
 
-    private void deleteKidClothes(Integer id) {
-        var kidClothesOptional = adultClothesRepository.findById(id);
-
-        if (kidClothesOptional.isEmpty())
-            throw new RuntimeException("Can not delete kid: this kid dont have a kidClothes");
-
-        var kidClothes = kidClothesOptional.get();
-
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendHelm));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendJackeSommer));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendHandschuhe));
-        unpairStuffKid(kidClothes.getStuff(StuffType.Cap));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendMütze));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendParkaWinter));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendPolo));
-        unpairStuffKid(kidClothes.getStuff(StuffType.Pullover));
-        unpairStuffKid(kidClothes.getStuff(StuffType.SoftshellJacke));
-        unpairStuffKid(kidClothes.getStuff(StuffType.JugendHose));
-        unpairStuffKid(kidClothes.getStuff(StuffType.TShirt));
-        unpairStuffKid(kidClothes.getStuff(StuffType.Feuerwehrstiefel));
-
-
-        kidClothesRepository.deleteById(id);
-    }
 }

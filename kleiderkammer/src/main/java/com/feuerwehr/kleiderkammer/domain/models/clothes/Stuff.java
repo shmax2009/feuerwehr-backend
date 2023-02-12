@@ -1,6 +1,7 @@
 package com.feuerwehr.kleiderkammer.domain.models.clothes;
 
 
+import com.feuerwehr.kleiderkammer.domain.enums.PersonType;
 import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.builders.StuffBuilder;
 import jakarta.persistence.*;
@@ -41,6 +42,8 @@ public class Stuff {
     private String parameters;
 
     private Integer clothesId;
+
+    private PersonType personType;
 
     public Parameter getParameter(String name) {
         if (parameters == null)

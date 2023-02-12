@@ -7,7 +7,10 @@ import com.feuerwehr.kleiderkammer.services.StoreSaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin/delete")
@@ -17,9 +20,6 @@ public class AdminDeleteController {
     private final StoreSaveService storeSaveService;
     private final StoreGetService storeGetService;
     private final StoreDeleteService storeDeleteService;
-
-    private final ErrorHandler errorHandler;
-
 
 
     @DeleteMapping("/stuff/{stuffId}")
