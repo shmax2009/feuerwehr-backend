@@ -1,5 +1,6 @@
 package com.feuerwehr.kleiderkammer.domain.models.adult;
 
+import com.feuerwehr.kleiderkammer.domain.ApplyToDatabaseException;
 import com.feuerwehr.kleiderkammer.domain.enums.StuffType;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import jakarta.persistence.*;
@@ -48,34 +49,24 @@ public class AdultClothes {
 
     public void setStuff(Stuff stuff, StuffType type) {
         switch (type) {
-            case Helm -> {
-                setHelmet(stuff);
-            }
-            case Einsatzjacke -> {
-                setCombatJacket(stuff);
-            }
-            case Einsatzhose -> {
-                setCombatTrousers(stuff);
-            }
-            case Überhose -> {
-                setTopTrousers(stuff);
-            }
-            case Feuerwehrstiefel -> {
-                setFirefightingBoots(stuff);
-            }
-            case Gurt -> {
-                setBelt(stuff);
-            }
-            case HandschuheBrandbekämpfung -> {
+            case Helm -> setHelmet(stuff);
 
-                setFirefightingGloves(stuff);
-            }
-            case Handschuhe -> {
-                setGloves(stuff);
-            }
-            default -> {
-                throw new RuntimeException("Can not set: This type not for adult");
-            }
+            case Einsatzjacke -> setCombatJacket(stuff);
+
+            case Einsatzhose -> setCombatTrousers(stuff);
+
+            case Überhose -> setTopTrousers(stuff);
+
+            case Feuerwehrstiefel -> setFirefightingBoots(stuff);
+
+            case Gurt -> setBelt(stuff);
+
+            case HandschuheBrandbekämpfung -> setFirefightingGloves(stuff);
+
+            case Handschuhe -> setGloves(stuff);
+
+            default -> throw new ApplyToDatabaseException("Can not set: This type not for adult");
+
         }
     }
 
@@ -106,9 +97,8 @@ public class AdultClothes {
             case Handschuhe -> {
                 return gloves;
             }
-            default -> {
-                throw new RuntimeException("Can not set: This type not for adult");
-            }
+            default -> throw new ApplyToDatabaseException("Can not get: This type not for adult");
+
         }
     }
 

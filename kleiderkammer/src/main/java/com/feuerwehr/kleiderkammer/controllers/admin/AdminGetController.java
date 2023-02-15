@@ -1,4 +1,4 @@
-package com.feuerwehr.kleiderkammer.controllers;
+package com.feuerwehr.kleiderkammer.controllers.admin;
 
 import com.feuerwehr.kleiderkammer.domain.models.dto.StuffDTO;
 import com.feuerwehr.kleiderkammer.domain.models.dto.adult.AdultDTO;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/get")
@@ -27,16 +26,16 @@ public class AdminGetController {
 
     @GetMapping("/adults")
     public List<AdultDTO> getAdults() {
-        return storeGetService.getAdults().stream().map(AdultDTO::new).collect(Collectors.toList());
+        return storeGetService.getAdults().stream().map(AdultDTO::new).toList();
     }
 
     @GetMapping("/stuffs")
     public List<StuffDTO> getStuffs() {
-        return storeGetService.getStuffs().stream().map(StuffDTO::new).collect(Collectors.toList());
+        return storeGetService.getStuffs().stream().map(StuffDTO::new).toList();
     }
 
     @GetMapping("/kids")
     public List<KidDTO> getKids() {
-        return storeGetService.getKids().stream().map(KidDTO::new).collect(Collectors.toList());
+        return storeGetService.getKids().stream().map(KidDTO::new).toList();
     }
 }

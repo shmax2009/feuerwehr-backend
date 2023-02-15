@@ -36,7 +36,6 @@ public class StuffDTO {
 
     private List<Parameter> parameters;
 
-    //    private Map<String, Object> parameters;
     private Integer clothesId;
 
 
@@ -57,11 +56,18 @@ public class StuffDTO {
         if (stuff.getParameters() != null) {
             parameters = new ArrayList<>();
             var paramMap = new JSONObject(stuff.getParameters()).toMap();
-            for (var param : paramMap.keySet()) {
-                var localParamMap = (HashMap) paramMap.get(param);
-                parameters.add(Parameter.fromMap(localParamMap));
+            for (var param : paramMap.values()) {
+
+                parameters.add(Parameter.fromMap((HashMap<String, String>) param));
             }
         }
+    }
+
+    public static StuffDTO createStuff(Stuff stuff) {
+        if (stuff == null)
+            return null;
+
+        return new StuffDTO(stuff);
     }
 
 

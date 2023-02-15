@@ -1,9 +1,11 @@
 package com.feuerwehr.kleiderkammer.services;
 
+import com.feuerwehr.kleiderkammer.domain.ApplyToDatabaseException;
 import com.feuerwehr.kleiderkammer.domain.enums.PersonType;
 import com.feuerwehr.kleiderkammer.domain.models.adult.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.adult.AdultClothes;
 import com.feuerwehr.kleiderkammer.domain.models.adult.AdultInfo;
+import com.feuerwehr.kleiderkammer.domain.models.adult.AdultVerein;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.StuffValidator;
 import com.feuerwehr.kleiderkammer.domain.models.kid.Kid;
@@ -12,6 +14,7 @@ import com.feuerwehr.kleiderkammer.domain.models.kid.KidInfo;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultRepository;
+import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultVereinRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.clothes.StuffRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.kid.KidClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.kid.KidInfoRepository;
@@ -28,6 +31,7 @@ import java.util.Objects;
 @Transactional
 @Slf4j
 public class StoreSaveService {
+    private final AdultVereinRepository adultVereinRepository;
     private final KidClothesRepository kidClothesRepository;
     private final KidRepository kidRepository;
     private final KidInfoRepository kidInfoRepository;
@@ -40,7 +44,7 @@ public class StoreSaveService {
 
     void throwError(String message) throws Error {
         log.error(message);
-        throw new RuntimeException(message);
+        throw new ApplyToDatabaseException(message);
     }
 
     public void addNewAdult(String name, String surname) {
@@ -65,6 +69,7 @@ public class StoreSaveService {
         AdultInfo adultInfo = new AdultInfo(name, surname);
         adult.setInfo(adultInfoRepository.save(adultInfo));
         adult.setClothes(adultClothesRepository.save(new AdultClothes()));
+        adult.setVerein(adultVereinRepository.save(new AdultVerein()));
         adultRepository.save(adult);
     }
 
@@ -127,11 +132,46 @@ public class StoreSaveService {
 
         var adultClothes = adult.getClothes();
 
+        var adultVerein = adult.getVerein();
+
         if (adultClothes == null) {
             throwError("Can not pair stuff to adult: this adult don't have clothes");
             return;
         }
-        pairStuffToAdultClothes(adultClothes, stuff);
+
+
+        boolean isForClothes = true;
+
+
+        try {
+            adultClothes.getStuff(stuff.getStuffType());
+        } catch (ApplyToDatabaseException e) {
+            isForClothes = false;
+        }
+
+        if (isForClothes) {
+            pairStuffToAdultClothes(adultClothes, stuff);
+        } else {
+            pairStuffToAdultVerein(adultVerein, stuff);
+        }
+
+
+    }
+
+    private void pairStuffToAdultVerein(AdultVerein verein, Stuff stuff) {
+        if (verein.getStuff(stuff.getStuffType()) != null) {
+            throwError("Can not pair stuff to adult: this adult already have this stuff");
+            return;
+        }
+        if (stuff.getClothesId() != null) {
+            throwError("Can not pair stuff to adult: this stuff is already paired");
+            return;
+        }
+
+        stuff.setClothesId(verein.getId());
+        stuff.setPersonType(PersonType.AdultVerein);
+        verein.setStuff(stuffRepository.save(stuff));
+        adultVereinRepository.save(verein);
 
     }
 
@@ -219,10 +259,11 @@ public class StoreSaveService {
         }
 
 
-        if (adultInfoRepository.findByNameAndSurname(info.getName(), info.getSurname()).isPresent()
-            && !Objects.equals(adultInfoRepository.findByNameAndSurname(info.getName(), info.getSurname()).get().getId(), info.getId())) {
-            throwError("Can not fetch adult info: adult with this name and surname already exist");
-            return;
+        if (adultInfoRepository.findByNameAndSurname(info.getName(), info.getSurname()).isPresent()) {
+            if (!Objects.equals(adultInfoRepository.findByNameAndSurname(info.getName(), info.getSurname()).get().getId(), info.getId())) {
+                throwError("Can not fetch adult info: adult with this name and surname already exist");
+                return;
+            }
         }
         if (!adultInfoRepository.existsById(info.getId()))
             throwError("Can not fetch adult info: he don't exist");

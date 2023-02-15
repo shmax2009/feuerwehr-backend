@@ -1,4 +1,4 @@
-package com.feuerwehr.kleiderkammer.controllers;
+package com.feuerwehr.kleiderkammer.controllers.admin;
 
 
 import com.feuerwehr.kleiderkammer.services.StoreDeleteService;

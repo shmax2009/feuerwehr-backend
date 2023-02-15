@@ -22,7 +22,17 @@ public enum StuffType {
     TShirt,
     Pullover,
     SoftshellJacke,
-    Cap
-
+    Cap,
+    Vereinsmesser,
+    KetteFürMesser,
+    Mütze,
+    Softshelljacke,
+    Poloshirt,
+    Tagdiensthose,
+    GürtelTDHose,
+    Sakko,
+    Hemd,
+    Krawatte,
+    Schirmmütze,
 
 }

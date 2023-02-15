@@ -41,42 +41,29 @@ public class KidClothesDTO {
             return;
         id = kidClothes.getId();
 
-        if (kidClothes.getHelmet() != null)
-            helmet = new StuffDTO(kidClothes.getHelmet());
+        helmet = StuffDTO.createStuff(kidClothes.getHelmet());
 
-        if (kidClothes.getJacket() != null)
-            jacket = new StuffDTO(kidClothes.getJacket());
+        jacket = StuffDTO.createStuff(kidClothes.getJacket());
 
-        if (kidClothes.getParka() != null)
-            parka = new StuffDTO(kidClothes.getParka());
+        parka = StuffDTO.createStuff(kidClothes.getParka());
 
-        if (kidClothes.getTrousers() != null)
-            trousers = new StuffDTO(kidClothes.getTrousers());
+        trousers = StuffDTO.createStuff(kidClothes.getTrousers());
 
-        if (kidClothes.getGloves() != null)
-            gloves = new StuffDTO(kidClothes.getGloves());
+        gloves = StuffDTO.createStuff(kidClothes.getGloves());
 
-        if (kidClothes.getFirefightingBoots() != null)
-            firefightingBoots = new StuffDTO(kidClothes.getFirefightingBoots());
+        firefightingBoots = StuffDTO.createStuff(kidClothes.getFirefightingBoots());
 
-        if (kidClothes.getHat() != null)
-            hat = new StuffDTO(kidClothes.getHat());
+        hat = StuffDTO.createStuff(kidClothes.getHat());
 
-        if (kidClothes.getPolo() != null)
-            polo = new StuffDTO(kidClothes.getPolo());
+        polo = new StuffDTO(kidClothes.getPolo());
 
-        if (kidClothes.getTShirt() != null)
-            tShirt = new StuffDTO(kidClothes.getTShirt());
+        tShirt = new StuffDTO(kidClothes.getTShirt());
 
-        if (kidClothes.getPullover() != null)
-            pullover = new StuffDTO(kidClothes.getPullover());
+        pullover = new StuffDTO(kidClothes.getPullover());
 
-        if (kidClothes.getSoftShellJacket() != null)
-            softShellJacket = new StuffDTO(kidClothes.getSoftShellJacket());
+        softShellJacket = new StuffDTO(kidClothes.getSoftShellJacket());
 
-        if (kidClothes.getCap() != null)
-            cap = new StuffDTO(kidClothes.getCap());
-
+        cap = new StuffDTO(kidClothes.getCap());
     }
 
 

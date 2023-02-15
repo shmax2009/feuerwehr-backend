@@ -1,6 +1,7 @@
 package com.feuerwehr.kleiderkammer.services;
 
 
+import com.feuerwehr.kleiderkammer.domain.ApplyToDatabaseException;
 import com.feuerwehr.kleiderkammer.domain.enums.PersonType;
 import com.feuerwehr.kleiderkammer.domain.models.adult.Adult;
 import com.feuerwehr.kleiderkammer.domain.models.clothes.Stuff;
@@ -8,6 +9,7 @@ import com.feuerwehr.kleiderkammer.domain.models.kid.Kid;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultInfoRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultRepository;
+import com.feuerwehr.kleiderkammer.domain.repository.adult.AdultVereinRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.clothes.StuffRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.kid.KidClothesRepository;
 import com.feuerwehr.kleiderkammer.domain.repository.kid.KidInfoRepository;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class StoreDeleteService {
+    private final AdultVereinRepository adultVereinRepository;
     private final KidInfoRepository kidInfoRepository;
     private final KidRepository kidRepository;
     private final KidClothesRepository kidClothesRepository;
@@ -32,16 +35,18 @@ public class StoreDeleteService {
     private final AdultInfoRepository adultInfoRepository;
     private final StuffRepository stuffRepository;
 
+
+    private static final String UNHANDLED_EXCEPTION = "Something went wrong";
+
     void throwError(String message) throws Error {
         log.error(message);
-        throw new RuntimeException(message);
+        throw new ApplyToDatabaseException(message);
     }
 
 
     //    Stuff is always normal because its from database
     private void unpairStuff(Optional<Stuff> stuffOptional) {
         if (stuffOptional.isEmpty()) {
-//            throwError("Can not unpair stuff, it's null");
             return;
         }
         var stuff = stuffOptional.get();
@@ -59,7 +64,7 @@ public class StoreDeleteService {
         if (stuff.getPersonType() == PersonType.Adult) {
             var adultClothesOpt = adultClothesRepository.findById(stuff.getClothesId());
             if (adultClothesOpt.isEmpty()) {
-                throwError("Something went wrong");
+                throwError(UNHANDLED_EXCEPTION);
                 return;
             }
             var adultClothes = adultClothesOpt.get();
@@ -71,12 +76,24 @@ public class StoreDeleteService {
         } else if (stuff.getPersonType() == PersonType.Kid) {
             var kidClothesOpt = kidClothesRepository.findById(stuff.getClothesId());
             if (kidClothesOpt.isEmpty()) {
-                throwError("Something went wrong");
+                throwError(UNHANDLED_EXCEPTION);
                 return;
             }
             var kidClothes = kidClothesOpt.get();
             kidClothes.setStuff(null, stuff.getStuffType());
             kidClothesRepository.save(kidClothes);
+            stuff.setPersonType(null);
+            stuff.setClothesId(null);
+            stuffRepository.save(stuff);
+        } else if (stuff.getPersonType() == PersonType.AdultVerein) {
+            var adultVereinOpt = adultVereinRepository.findById(stuff.getClothesId());
+            if (adultVereinOpt.isEmpty()) {
+                throwError(UNHANDLED_EXCEPTION);
+                return;
+            }
+            var adultVerein = adultVereinOpt.get();
+            adultVerein.setStuff(null, stuff.getStuffType());
+            adultVereinRepository.save(adultVerein);
             stuff.setPersonType(null);
             stuff.setClothesId(null);
             stuffRepository.save(stuff);
@@ -98,6 +115,8 @@ public class StoreDeleteService {
 
         adultInfoRepository.delete(adult.getInfo());
         var adultClothes = adult.getClothes();
+        var adultVerein = adult.getVerein();
+        //region unpair adult clothes
         unpairStuff(Optional.ofNullable(adultClothes.getGloves()));
         unpairStuff(Optional.ofNullable(adultClothes.getHelmet()));
         unpairStuff(Optional.ofNullable(adultClothes.getCombatJacket()));
@@ -106,9 +125,26 @@ public class StoreDeleteService {
         unpairStuff(Optional.ofNullable(adultClothes.getFirefightingGloves()));
         unpairStuff(Optional.ofNullable(adultClothes.getTopTrousers()));
         unpairStuff(Optional.ofNullable(adultClothes.getCombatTrousers()));
-//        TODO
-        adultClothesRepository.delete(adultClothes);
+        //        endregion
 
+        //region unpair adult verein
+        unpairStuff(Optional.ofNullable(adultVerein.getKnife()));
+        unpairStuff(Optional.ofNullable(adultVerein.getPoloshirt()));
+        unpairStuff(Optional.ofNullable(adultVerein.getSakko()));
+        unpairStuff(Optional.ofNullable(adultVerein.getShirt()));
+        unpairStuff(Optional.ofNullable(adultVerein.getTie()));
+        unpairStuff(Optional.ofNullable(adultVerein.getBeltTDPants()));
+        unpairStuff(Optional.ofNullable(adultVerein.getPeakedCap()));
+        unpairStuff(Optional.ofNullable(adultVerein.getChainForKnives()));
+        unpairStuff(Optional.ofNullable(adultVerein.getDailyTrousers()));
+        unpairStuff(Optional.ofNullable(adultVerein.getSoftshellJacket()));
+        unpairStuff(Optional.ofNullable(adultVerein.getHat()));
+        unpairStuff(Optional.ofNullable(adultVerein.getCap()));
+        unpairStuff(Optional.ofNullable(adultVerein.getPullover()));
+        unpairStuff(Optional.ofNullable(adultVerein.getTShirt()));
+        //endregion unpair adult verein
+        adultClothesRepository.delete(adultClothes);
+        adultVereinRepository.delete(adultVerein);
         adultRepository.delete(adult);
 
     }
@@ -155,7 +191,6 @@ public class StoreDeleteService {
         unpairStuff(Optional.ofNullable(kidClothes.getSoftShellJacket()));
         unpairStuff(Optional.ofNullable(kidClothes.getCap()));
 
-//        TODO
         kidClothesRepository.delete(kidClothes);
 
         kidRepository.delete(kid);

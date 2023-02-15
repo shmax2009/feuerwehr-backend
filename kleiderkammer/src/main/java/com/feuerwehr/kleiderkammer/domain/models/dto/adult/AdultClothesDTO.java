@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * A DTO for the {@link AdultClothes} entity
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,22 +36,15 @@ public class AdultClothesDTO {
         if (adultClothes == null)
             return;
         id = adultClothes.getId();
-        if (adultClothes.getCombatJacket() != null)
-            combatJacket = new StuffDTO(adultClothes.getCombatJacket());
-        if (adultClothes.getCombatTrousers() != null)
-            combatTrousers = new StuffDTO(adultClothes.getCombatTrousers());
-        if (adultClothes.getFirefightingBoots() != null)
-            firefightingBoots = new StuffDTO(adultClothes.getFirefightingBoots());
-        if (adultClothes.getFirefightingGloves() != null)
-            firefightingGloves = new StuffDTO(adultClothes.getFirefightingGloves());
-        if (adultClothes.getGloves() != null)
-            gloves = new StuffDTO(adultClothes.getGloves());
-        if (adultClothes.getHelmet() != null)
-            helmet = new StuffDTO(adultClothes.getHelmet());
-        if (adultClothes.getTopTrousers() != null)
-            topTrousers = new StuffDTO(adultClothes.getTopTrousers());
-        if (adultClothes.getBelt() != null)
-            belt = new StuffDTO(adultClothes.getBelt());
+
+        combatJacket = StuffDTO.createStuff(adultClothes.getCombatJacket());
+        combatTrousers = StuffDTO.createStuff(adultClothes.getCombatTrousers());
+        firefightingBoots = StuffDTO.createStuff(adultClothes.getFirefightingBoots());
+        firefightingGloves = StuffDTO.createStuff(adultClothes.getFirefightingGloves());
+        gloves = StuffDTO.createStuff(adultClothes.getGloves());
+        helmet = StuffDTO.createStuff(adultClothes.getHelmet());
+        topTrousers = StuffDTO.createStuff(adultClothes.getTopTrousers());
+        belt = StuffDTO.createStuff(adultClothes.getBelt());
     }
 
 

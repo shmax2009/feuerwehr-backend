@@ -25,8 +25,17 @@ public class Adult {
     private AdultClothes clothes;
 
 
+    @OneToOne
+    private AdultVerein verein;
+
     public Adult(AdultInfo info, AdultClothes clothes) {
         this.info = info;
         this.clothes = clothes;
+    }
+
+    public Adult(AdultInfo info, AdultClothes clothes, AdultVerein verein) {
+        this.info = info;
+        this.clothes = clothes;
+        this.verein = verein;
     }
 }
